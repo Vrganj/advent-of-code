@@ -5,7 +5,7 @@ colcount = length(data[1])
 
 isvalid(row, col) = 0 < row <= rowcount && 0 < col <= colcount
 
-function iterate(row, col, vrow, vcol)
+function iterate(row, col, vrow, vcol)::Char
     global data
 
     for i in 1:100
@@ -24,7 +24,7 @@ function iterate(row, col, vrow, vcol)
     return 'N'
 end
 
-function taken(row, col)
+function taken(row::Int, col::Int)::Int
     result = 0
 
     result += iterate(row, col, 1, 0) == '#'
@@ -47,12 +47,13 @@ while true
     for row in 1:rowcount
         for col in 1:colcount
             t = taken(row, col)
+            c = data[row][col]
 
-            if data[row][col] == '#'
+            if c == '#'
                 if t >= 5
                     clone[row][col] = 'L'
                 end
-            elseif data[row][col] == 'L'
+            elseif c == 'L'
                 if t == 0
                     clone[row][col] = '#'
                 end
@@ -63,8 +64,8 @@ while true
     if data == clone
         result = 0
 
-        for row in data
-            for col in row
+        for row in data::Array{Array{Char, 1}}
+            for col in row::Array{Char, 1}
                 result += col == '#'
             end
         end
