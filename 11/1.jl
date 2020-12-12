@@ -1,55 +1,45 @@
-data = collect.(eachline("input.txt"))
+data = hcat(collect.(eachline("input.txt"))...)
 
-rowcount = length(data)
-colcount = length(data[1])
+width = size(data, 1)
+height = size(data, 2)
 
-isvalid(row, col) = 0 < row <= rowcount && 0 < col <= colcount
-
-function neighbors(row, col)
-    global data
-
+function occupied(index)
     result = 0
 
     for i in -1:1
         for j in -1:1
-            if i == j == 0
-                continue
-            end
+            i == j == 0 && continue
 
-            if isvalid(row + i, col + j) && data[row + i][col + j] == '#'
-                result += 1
-            end
+            result += get(data, index + CartesianIndex(i, j), '.') == '#'
         end
     end
 
-    return result
+    result
 end
 
 while true
+    global data
+
     clone = deepcopy(data)
 
-    for row in 1:rowcount
-        for col in 1:colcount
-            n = neighbors(row, col)
+    for index in CartesianIndices(data)
+        data[index] == '.' && continue
 
-            if data[row][col] == '#'
-                if n >= 4
-                    clone[row][col] = 'L'
-                end
-            elseif data[row][col] == 'L'
-                if n == 0
-                    clone[row][col] = '#'
-                end
+        o = occupied(index)
+
+        if data[index] == 'L'
+            if o == 0
+                clone[index] = '#'
+            end
+        else
+            if o >= 4
+                clone[index] = 'L'
             end
         end
     end
 
-    if data == clone
-        break
-    end
-
-    global data = clone
+    data == clone ? break : data = clone
 end
 
-print(count(c -> c === '#', join(collect(join(line, "") for line in data), "\n")))
+print(count(==('#'), data))
 
