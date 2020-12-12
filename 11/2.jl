@@ -61,8 +61,6 @@ while true
     end
 
     if data == clone
-        println()
-
         result = 0
 
         for row in data
